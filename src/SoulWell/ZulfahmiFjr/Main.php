@@ -84,7 +84,9 @@ class Main extends PluginBase implements Listener{
                $this->givePlayer($p);
          break;
          case 1:	
-               
+               $item = $p->getInventory()->getItemInHand()->getName("Ticket Reward");
+		if(
+		     
                $this->givePlayer($p);
          break;
                
