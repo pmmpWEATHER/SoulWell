@@ -66,25 +66,28 @@ class Main extends PluginBase implements Listener{
       $y = $data->get("well.y");
       $z = $data->get("well.z");
       if($b->x === $x && $b->y === $y + 2 && $b->z === $z || $b->x === $x && $b->y === $y + 1 && $b->z === $z){
-       $pk = new ModalFormRequestPacket();
-       $pk->formId = 7382999;
-       $message = "§f       _________________________\n           §6§lSoul Well by Hypixel\n§r§f       -------------------------\n";
-       if(!empty($this->getConfig()->get("message"))){
-        if(is_array($this->getConfig()->get("message"))){
-         foreach($this->getConfig()->get("message") as $text){
-          $text = str_replace(["{KEY}", "{PLAYER}"], [$this->souls->get($p->getLowerCaseName()), $p->getName()], $text);
-          $message .= "{$text}§r\n\n";
-         }
-        }else{
-         $text = str_replace(["{KEY}", "{PLAYER}"], [$this->souls->get($p->getLowerCaseName()), $p->getName()], $this->getConfig()->get("message"));
-         $message .= "{$text}§r\n\n";
-        }
-       }
-       $encode = ["type" => "form", "title" => "§e§lSoul Well Confirm", "content" => "{$message}", "buttons" => [["text" => "§lOpen SoulWell"], ["text" => "§lCancel Opening"]]];
-       $data = json_encode($encode);
-       $pk->formData = $data;
-       $p->dataPacket($pk);
-       $e->setCancelled();
+        $api = $this->plugin->getServer()->getPluginManager()->getPlugin("FormAPI");
+	    $form = $api->createSimpleForm(function (Player $p, int $data = null) {
+	    $result = $data;
+	    if ($result === null) {
+	        return true;
+	    }
+		switch ($result) {
+		case 0:	
+             $m = EconomyAPI::getInstance()->myMoney($p);
+             if($m >= 100){
+			   EconomyAPI::getInstance()->reduceMoney($p, 100);
+                $core = $this->plugin->getServer()->getPluginManager()->getPlugin("Core");
+               if($core instanceof Core){
+                  $core->addFireworks($p,rand(1,3),rand(1,2));
+               } 
+               $this->givePlayer($p);
+         break;
+         case 1:	
+               
+               $this->givePlayer($p);
+         break;
+               
       }
      }
     }
